@@ -9,11 +9,22 @@
 
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
 
+admin.initializeApp({
+    databaseURL: `https://console.firebase.google.com/u/1/project/testchatemoji/database/testchatemoji-default-rtdb/data/~2F`
+})
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-// export const helloWorld = onRequest((request, response) => {
-//   logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+export const helloWorld = onRequest((request, response) => {
+  logger.info("Hello logs!", {structuredData: true});
+  response.send("Hello from Firebase!");
+});
+
+export function chat(gameId: string, address: string, text: string)
+{
+    const messageRef = admin.database().ref('games_chat').child(gameId)
+    messageRef.push({address, text, })
+    logger.info
+}
