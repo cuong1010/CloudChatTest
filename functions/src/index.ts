@@ -44,7 +44,19 @@ export const pushChat = onRequest(async (req, res) => {
     // Write chat message to Realtime Database
     await db.ref(`game_chats/${gameId}`).push(chatMessage);
 
-    res.status(200).send({ message: 'Chat message pushed successfully.' });
+    // Retrieve all chat messages for the specified gameId
+    const chatSnapshot = await db.ref(`game_chats/${gameId}`).once('value');
+
+    if (!chatSnapshot.exists()) {
+      res
+        .status(404)
+        .send({ error: 'No messages found for the specified gameId.' });
+    }
+
+    const messages = chatSnapshot.val();
+
+    // Return all messages after adding the new one
+    res.status(200).send({ messages });
   } catch (error) {
     console.error('Error pushing chat message:', error);
     res.status(500).send({ error: 'Internal server error.' });
